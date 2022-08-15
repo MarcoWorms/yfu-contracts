@@ -71,4 +71,15 @@ contract YFUtechne is ERC721, Pausable, AccessControl {
         }
         require(!transfers_frozen, "Transfers are paused");
     }
+    
+    // The following functions are overrides required by Solidity.
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 }
