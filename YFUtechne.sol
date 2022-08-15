@@ -2,12 +2,11 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YFUtechne is ERC721, ERC721Enumerable, Pausable, AccessControl {
+contract YFUtechne is ERC721, Pausable, AccessControl {
     using Counters for Counters.Counter;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -20,7 +19,7 @@ contract YFUtechne is ERC721, ERC721Enumerable, Pausable, AccessControl {
     bool public transfers_frozen = true;
 
     constructor() ERC721("YFU Techne", "YFU_1") {
-        depositAddress = msg.sender;
+        depositAddress = payable(msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(TRANSFER_FREEZER_ROLE, msg.sender);
@@ -71,16 +70,5 @@ contract YFUtechne is ERC721, ERC721Enumerable, Pausable, AccessControl {
             return;
         }
         require(!transfers_frozen, "Transfers are paused");
-    }
-
-    // The following functions are overrides required by Solidity.
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable, AccessControl)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 }
