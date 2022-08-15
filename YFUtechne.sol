@@ -16,10 +16,11 @@ contract YFUtechne is ERC721, ERC721Enumerable, Pausable, AccessControl {
 
     uint256 public MAX_SUPPLY = 10;
     uint256 public PRICE = 1 ether;
-    address payable public depositAddress = payable(0x5b87102358a61BC9a6D32b20B121bbfd2A535C8d); // todo: change to multisig
+    address payable public depositAddress;
     bool public transfers_frozen = true;
 
     constructor() ERC721("YFU Techne", "YFU_1") {
+        depositAddress = msg.sender;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(TRANSFER_FREEZER_ROLE, msg.sender);
