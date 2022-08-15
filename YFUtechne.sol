@@ -26,7 +26,7 @@ contract YFUtechne is ERC721, Pausable, AccessControl {
     }
 
     function _baseURI() internal view override returns (string memory) {
-        return "https://ipfs.io/ipfs/QmSt5CVksdLfvaDCHwPvTGtXs7YrSGcQ2raE3M9nXPifZH";
+        return "https://ipfs.io/ipfs/QmSt5CVksdLfvaDCHwPvTGtXs7YrSGcQ2raE3M9nXPifZH/";
     }
 
     function setDepositAddress(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
