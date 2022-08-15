@@ -25,3 +25,4 @@ Todos before prod:
 - find a IPFS to host all metadata .jsons for prod (pinata free plan can't handle this for exmaple)
 - change `depositAddress` to YFI story multisig address
 - coordinate deploy with YFI story multisig signers
+- change MAX_SUPPLY and PRICE to match the project's needs
