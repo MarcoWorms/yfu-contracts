@@ -64,7 +64,7 @@ contract YFUtechne is ERC721, ERC721Enumerable, Pausable, AccessControl {
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         whenNotPaused
-        override(ERC721, ERC721Enumerable)
+        override(ERC721)
     {
         // if transfer comes from 0 it means it's a mint and we dont want to freeze mints when only transfers are fronzen, so we skip the require
         if (address(0) == from) {
