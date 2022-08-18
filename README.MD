@@ -8,7 +8,7 @@ Modified ERC721 from OpenZeppelin, to attend the following:
 
 Testing checklist for [YFUtechne.sol](./YFUtechne.sol) reviewers:
 
-- [ ] Deploy contract in testnet
+- [ ] Deploy contract in testnet and set your address ad admin on deploy params
 - [ ] Mint until the max limit and make sure `msg.value` = mint price 
 - [ ] `freeze_transfers` should not allow any transfer to happen but should allow `mint` to happen
 - [ ] `unfreeze_transfers` should work

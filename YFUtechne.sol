@@ -16,9 +16,9 @@ contract YFUtechne is ERC721, AccessControl {
     bool public transfers_frozen = true;
     string public uri = "https://ipfs.io/ipfs/QmSt5CVksdLfvaDCHwPvTGtXs7YrSGcQ2raE3M9nXPifZH/";
 
-    constructor() ERC721("YFU Techne", "YFU_1") {
-        depositAddress = payable(msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    constructor(address payable adminAddress) ERC721("YFU Techne", "YFU_1") {
+        depositAddress = adminAddress;
+        _grantRole(DEFAULT_ADMIN_ROLE, adminAddress);
     }
 
     function set_base_uri(string memory newUri) public onlyRole(DEFAULT_ADMIN_ROLE) {
