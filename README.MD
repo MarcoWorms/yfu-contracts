@@ -3,18 +3,18 @@ Modified ERC721 from OpenZeppelin, to attend the following:
 - Add a fixed limit for total copies minted (can't be changed after deployed)
 - Copies minted cost a fixed price (can't be changed after deployed)
 - wallets with the DEFAULT_ADMIN_ROLE can add/remove wallets for below roles
-- wallets with the PAUSER role can pause/unpause the entire contract
-- wallets with the TRANSFER_FREEZER role can freeze/unfreeze all tokens transferability
+- wallets with the DEFAULT_ADMIN_ROLE role can freeze/unfreeze all tokens transferability
 - in prod the DEFAULT_ADMIN_ROLE will be owned only by "YFI story multisig"
 
 Testing checklist for [YFUtechne.sol](./YFUtechne.sol) reviewers:
 
 - [ ] Deploy contract in testnet
 - [ ] Mint until the max limit and make sure `msg.value` = mint price 
-- [ ] `pause` function should pause both minting and transfers
 - [ ] `freeze_transfers` should not allow any transfer to happen but should allow `mint` to happen
-- [ ] `unpause` and `unfreeze_transfers` should work
-- [ ] `DEFAULT_ADMIN_ROLE`, `PAUSER_ROLE`, `TRANSFER_FREEZER_ROLE` should have getters to return their bytes32role value
+- [ ] `unfreeze_transfers` should work
+- [ ] `set_base_uri` should work
+- [ ] `set_deposit_address` should work
+- [ ] `DEFAULT_ADMIN_ROLE` should have getters to return its bytes32role value
 - [ ] Deployer address can use `grantRole` to give roles
 - [ ] Deployer address can use `renouceRole` to remove own roles
 - [ ] Deployer address can use `revokeRole` to remove roles form others
