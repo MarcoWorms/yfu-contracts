@@ -14,15 +14,16 @@ contract YFUtechne is ERC721, AccessControl {
     uint256 public PRICE = 1 ether;
     address payable public depositAddress;
     bool public transfers_frozen = true;
-    string public uri = "https://ipfs.io/ipfs/QmSt5CVksdLfvaDCHwPvTGtXs7YrSGcQ2raE3M9nXPifZH/";
+    string public ipfsBaseURI;
 
-    constructor(address payable adminAddress) ERC721("YFU Techne", "YFU_1") {
+    constructor(address payable adminAddress, string memory ipfsURI) ERC721("YFU Techne", "YFU_1") {
+        ipfsBaseURI = ipfsURI;
         depositAddress = adminAddress;
         _grantRole(DEFAULT_ADMIN_ROLE, adminAddress);
     }
 
-    function set_base_uri(string memory newUri) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        uri = newUri;
+    function set_ipfs_base_uri(string memory ipfsURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        ipfsBaseURI = ipfsURI;
     }
 
     function set_deposit_address(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -34,7 +35,7 @@ contract YFUtechne is ERC721, AccessControl {
     }
 
     function _baseURI() internal view override returns (string memory) {
-        return uri;
+        return ipfsBaseURI;
     }
 
     function safeMint(address to) public payable {
