@@ -2,54 +2,43 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YFUtechne is ERC721, Pausable, AccessControl {
+contract YFUtechne is ERC721, AccessControl {
     using Counters for Counters.Counter;
 
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant TRANSFER_FREEZER_ROLE = keccak256("TRANSFER_FREEZER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
     uint256 public MAX_SUPPLY = 10;
     uint256 public PRICE = 1 ether;
     address payable public depositAddress;
     bool public transfers_frozen = true;
+    string public ipfsBaseURI;
 
-    constructor() ERC721("YFU Techne", "YFU_1") {
-        depositAddress = payable(msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
-        _grantRole(TRANSFER_FREEZER_ROLE, msg.sender);
+    constructor(address payable adminAddress, string memory ipfsURI) ERC721("YFU Techne", "YFU_1") {
+        ipfsBaseURI = ipfsURI;
+        depositAddress = adminAddress;
+        _grantRole(DEFAULT_ADMIN_ROLE, adminAddress);
     }
 
-    function _baseURI() internal view override returns (string memory) {
-        return "https://ipfs.io/ipfs/QmSt5CVksdLfvaDCHwPvTGtXs7YrSGcQ2raE3M9nXPifZH/";
+    function set_ipfs_base_uri(string memory ipfsURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        ipfsBaseURI = ipfsURI;
     }
 
-    function setDepositAddress(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function set_deposit_address(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
         depositAddress = to;
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
-    }
-
-    function freeze_transfers() public onlyRole(TRANSFER_FREEZER_ROLE) {
-        transfers_frozen = true;
-    }
-
-    function unfreeze_transfers() public onlyRole(TRANSFER_FREEZER_ROLE) {
+    function unfreeze_transfers() public onlyRole(DEFAULT_ADMIN_ROLE) {
         transfers_frozen = false;
     }
 
-    function safeMint(address to) public whenNotPaused payable {
+    function _baseURI() internal view override returns (string memory) {
+        return ipfsBaseURI;
+    }
+
+    function safeMint(address to) public payable {
         require(_tokenIdCounter.current() < MAX_SUPPLY, "Maximum token supply reached");
         require(msg.value == PRICE, "Invalid amount");
 
@@ -62,7 +51,6 @@ contract YFUtechne is ERC721, Pausable, AccessControl {
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
-        whenNotPaused
         override(ERC721)
     {
         // if transfer comes from 0 it means it's a mint and we dont want to freeze mints when only transfers are fronzen, so we skip the require
