@@ -11,8 +11,8 @@ contract YFUtechne is ERC721, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
-    uint256 public MAX_SUPPLY = 10;
-    uint256 public PRICE = 1 ether;
+    uint256 immutable internal MAX_SUPPLY = 10;
+    uint256 immutable internal PRICE = 1 ether;
     address payable public depositAddress;
     bool public transfers_frozen = true;
     string public ipfsBaseURI;
