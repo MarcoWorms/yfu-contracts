@@ -47,9 +47,20 @@ contract YFUtechne is ERC721, Ownable {
         _safeMint(to, tokenId);
     }
 
+    function withdraw() public onlyOwner {
+        uint256 balance = address(this).balance;
+        depositAddress.call{value: balance}("");
+    }
+
+    function withdrawTokens(IERC20 token) public onlyOwner {
+        uint256 balance = token.balanceOf(address(this));
+        require(token.transfer(depositAddress, balance));
+    }
+
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         override(ERC721)
+        view
     {
         // if transfer comes from 0 it means it's a mint and we dont want to freeze mints when only transfers are fronzen, so we skip the require
         if (address(0) == from) {
