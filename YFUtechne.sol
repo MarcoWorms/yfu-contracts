@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 contract YFUtechne is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -40,8 +41,6 @@ contract YFUtechne is ERC721, Ownable {
     function safeMint(address to) public payable {
         require(_tokenIdCounter.current() < MAX_SUPPLY, "Maximum token supply reached");
         require(msg.value == PRICE, "Invalid amount");
-
-        depositAddress.transfer(PRICE);
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
