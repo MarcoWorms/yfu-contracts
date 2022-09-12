@@ -2,10 +2,10 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YFUtechne is ERC721, AccessControl {
+contract YFUtechne is ERC721, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
@@ -19,18 +19,17 @@ contract YFUtechne is ERC721, AccessControl {
     constructor(address payable adminAddress, string memory ipfsURI) ERC721("YFU Techne", "YFU_1") {
         ipfsBaseURI = ipfsURI;
         depositAddress = adminAddress;
-        _grantRole(DEFAULT_ADMIN_ROLE, adminAddress);
     }
 
-    function set_ipfs_base_uri(string memory ipfsURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function set_ipfs_base_uri(string memory ipfsURI) public onlyOwner {
         ipfsBaseURI = ipfsURI;
     }
 
-    function set_deposit_address(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function set_deposit_address(address payable to) public onlyOwner {
         depositAddress = to;
     }
 
-    function unfreeze_transfers() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unfreeze_transfers() public onlyOwner {
         transfers_frozen = false;
     }
 
@@ -60,14 +59,4 @@ contract YFUtechne is ERC721, AccessControl {
         require(!transfers_frozen, "Transfers are paused");
     }
     
-    // The following functions are overrides required by Solidity.
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, AccessControl)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
 }
