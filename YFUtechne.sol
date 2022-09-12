@@ -22,15 +22,15 @@ contract YFUtechne is ERC721, Ownable {
         depositAddress = adminAddress;
     }
 
-    function set_ipfs_base_uri(string memory ipfsURI) public onlyOwner {
+    function set_ipfs_base_uri(string memory ipfsURI) external onlyOwner {
         ipfsBaseURI = ipfsURI;
     }
 
-    function set_deposit_address(address payable to) public onlyOwner {
+    function set_deposit_address(address payable to) external onlyOwner {
         depositAddress = to;
     }
 
-    function unfreeze_transfers() public onlyOwner {
+    function unfreeze_transfers() external onlyOwner {
         transfers_frozen = false;
     }
 
@@ -38,7 +38,7 @@ contract YFUtechne is ERC721, Ownable {
         return ipfsBaseURI;
     }
 
-    function safeMint(address to) public payable {
+    function safeMint(address to) external payable {
         require(_tokenIdCounter.current() < MAX_SUPPLY, "Maximum token supply reached");
         require(msg.value == PRICE, "Invalid amount");
 
@@ -47,12 +47,12 @@ contract YFUtechne is ERC721, Ownable {
         _safeMint(to, tokenId);
     }
 
-    function withdraw() public onlyOwner {
+    function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
         depositAddress.call{value: balance}("");
     }
 
-    function withdrawTokens(IERC20 token) public onlyOwner {
+    function withdrawTokens(IERC20 token) external onlyOwner {
         uint256 balance = token.balanceOf(address(this));
         require(token.transfer(depositAddress, balance));
     }
