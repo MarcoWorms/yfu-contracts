@@ -11,8 +11,8 @@ contract YFUtechne is ERC721, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
-    uint256 immutable internal MAX_SUPPLY = 10;
-    uint256 immutable internal PRICE = 1 ether;
+    uint256 constant internal MAX_SUPPLY = 10;
+    uint256 constant internal PRICE = 1 ether;
     address payable public depositAddress;
     bool public transfers_frozen = true;
     string public ipfsBaseURI;
@@ -49,7 +49,8 @@ contract YFUtechne is ERC721, Ownable {
 
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
-        depositAddress.call{value: balance}("");
+        (bool success, ) = depositAddress.call{value: PRICE}("");
+        require (success, "ETH transfer failed");
     }
 
     function withdrawTokens(IERC20 token) external onlyOwner {
