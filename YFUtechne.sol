@@ -44,7 +44,7 @@ contract YFUtechne is ERC721, Ownable {
 
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
-        (bool success, ) = depositAddress.call{value: PRICE}("");
+        (bool success, ) = depositAddress.call{value: balance}("");
         require (success, "ETH transfer failed");
     }
 
