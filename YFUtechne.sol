@@ -19,15 +19,15 @@ contract YFUtechne is ERC721, Ownable {
         depositAddress = adminAddress;
     }
 
-    function set_ipfs_base_uri(string memory ipfsURI) external onlyOwner {
+    function setIpfsBaseUri(string memory ipfsURI) external onlyOwner {
         ipfsBaseURI = ipfsURI;
     }
 
-    function set_deposit_address(address payable to) external onlyOwner {
+    function setDepositAddress(address payable to) external onlyOwner {
         depositAddress = to;
     }
 
-    function unfreeze_transfers() external onlyOwner {
+    function unfreezeTransfers() external onlyOwner {
         transfers_frozen = false;
     }
 
