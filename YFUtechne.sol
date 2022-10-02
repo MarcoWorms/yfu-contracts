@@ -2,16 +2,14 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-contract YFUtechne is ERC721, AccessControl {
-    using Counters for Counters.Counter;
+contract YFUtechne is ERC721, Ownable {
 
-    Counters.Counter private _tokenIdCounter;
-
-    uint256 public MAX_SUPPLY = 10;
-    uint256 public PRICE = 1 ether;
+    uint256 constant internal MAX_SUPPLY = 10;
+    uint256 constant internal PRICE = 1 ether;
+    uint256 public tokenCount = 0;
     address payable public depositAddress;
     bool public transfers_frozen = true;
     string public ipfsBaseURI;
@@ -19,18 +17,17 @@ contract YFUtechne is ERC721, AccessControl {
     constructor(address payable adminAddress, string memory ipfsURI) ERC721("YFU Techne", "YFU_1") {
         ipfsBaseURI = ipfsURI;
         depositAddress = adminAddress;
-        _grantRole(DEFAULT_ADMIN_ROLE, adminAddress);
     }
 
-    function set_ipfs_base_uri(string memory ipfsURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIpfsBaseUri(string memory ipfsURI) external onlyOwner {
         ipfsBaseURI = ipfsURI;
     }
 
-    function set_deposit_address(address payable to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setDepositAddress(address payable to) external onlyOwner {
         depositAddress = to;
     }
 
-    function unfreeze_transfers() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unfreezeTransfers() external onlyOwner {
         transfers_frozen = false;
     }
 
@@ -38,20 +35,28 @@ contract YFUtechne is ERC721, AccessControl {
         return ipfsBaseURI;
     }
 
-    function safeMint(address to) public payable {
-        require(_tokenIdCounter.current() < MAX_SUPPLY, "Maximum token supply reached");
+    function safeMint(address to) external payable {
+        require(tokenCount < MAX_SUPPLY, "Maximum token supply reached");
         require(msg.value == PRICE, "Invalid amount");
+        tokenCount = tokenCount + 1;
+        _safeMint(to, tokenCount);
+    }
 
-        depositAddress.transfer(PRICE);
+    function withdraw() external onlyOwner {
+        uint256 balance = address(this).balance;
+        (bool success, ) = depositAddress.call{value: balance}("");
+        require (success, "ETH transfer failed");
+    }
 
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+    function withdrawTokens(IERC20 token) external onlyOwner {
+        uint256 balance = token.balanceOf(address(this));
+        require(token.transfer(depositAddress, balance));
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         override(ERC721)
+        view
     {
         // if transfer comes from 0 it means it's a mint and we dont want to freeze mints when only transfers are fronzen, so we skip the require
         if (address(0) == from) {
@@ -60,14 +65,4 @@ contract YFUtechne is ERC721, AccessControl {
         require(!transfers_frozen, "Transfers are paused");
     }
     
-    // The following functions are overrides required by Solidity.
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, AccessControl)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
 }
