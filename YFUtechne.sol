@@ -13,6 +13,7 @@ contract YFUtechne is ERC721, Ownable {
     address payable public depositAddress;
     bool public transfers_frozen = true;
     string public ipfsBaseURI;
+    mapping(address => mapping(uint256 => uint256)) private _initialOwners;
 
     constructor(address payable adminAddress, string memory ipfsURI) ERC721("YFU Techne", "YFU_1") {
         ipfsBaseURI = ipfsURI;
@@ -39,6 +40,7 @@ contract YFUtechne is ERC721, Ownable {
         require(tokenCount < MAX_SUPPLY, "Maximum token supply reached");
         require(msg.value == PRICE, "Invalid amount");
         tokenCount = tokenCount + 1;
+        _addTokenToInitialOwner(to, tokenCount);
         _safeMint(to, tokenCount);
     }
 
@@ -65,4 +67,14 @@ contract YFUtechne is ERC721, Ownable {
         require(!transfers_frozen, "Transfers are paused");
     }
     
+    function _addTokenToInitialOwner(address to, uint256 tokenId) private {
+        uint256 length = balanceOf(to);
+        _initialOwners[to][length] = tokenId;
+    }
+
+    function tokenOfInitialOwner(address owner, uint256 index) public view returns (uint256) {
+        require(index < balanceOf(owner), "index out of bounds");
+        return _initialOwners[owner][index];
+    }
+
 }
